@@ -1,9 +1,16 @@
 package com.ta.llmbackend.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ta.llmbackend.model.Message;
 
 @Service
 public class RabbitMQService {
@@ -14,19 +21,27 @@ public class RabbitMQService {
     @Autowired
     private DirectExchange msgExchange;
 
-    public String sendMsgRequest(String message) {
+    @Autowired
+    private ObjectMapper objectMapper;
 
-        // Request mesting message
-        System.out.println(" [x] Requesting process(" + message + ")");
+    public String sendMsgRequest(Message message) throws JsonProcessingException {
+
+        Map<String, Object> msgData = new HashMap<>();
+        msgData.put("userId", message.getUserId());
+        msgData.put("reqType", message.getReqType());
+
+        System.out.println(" [client] Requesting process(userId: " + message.getUserId() + ", reqType: "
+                + message.getReqType() + ")");
 
         // Send message to queue and receive the response as a byte array
-        Object response = rabbitTemplate.convertSendAndReceive(msgExchange.getName(), "rpc", message);
+        String messageToServer = objectMapper.writeValueAsString(msgData);
+        Object response = rabbitTemplate.convertSendAndReceive(msgExchange.getName(), "rpc", messageToServer);
 
         // Convert the response to a String if it's a byte array
         if (response instanceof byte[]) {
-            return new String((byte[]) response); // Convert byte array to String
+            return new String((byte[]) response);
         } else if (response instanceof String) {
-            return (String) response; // Cast to String directly
+            return (String) response;
         } else {
             return "Invalid response type received";
         }
