@@ -13,10 +13,12 @@ public class Evaluation {
 
     private String question;
 
-    private String context;
+    private String userAns;
+
+    private String expectedAns;
 
     private String explanation;
 
-    private float score;
+    private boolean score;
 
 }

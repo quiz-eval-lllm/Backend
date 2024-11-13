@@ -35,7 +35,7 @@ public class Message {
 
     private List<ExpectedAns> expectedAns;
 
-    private List<Evaluation> evaluations; // TODO: Evaluation
+    private List<Evaluation> evaluations;
 
     private float score;
 

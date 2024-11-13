@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.api.core.ApiFuture;
+import com.ta.llmbackend.model.Evaluation;
 import com.ta.llmbackend.model.ExpectedAns;
 import com.ta.llmbackend.model.Message;
 import com.ta.llmbackend.model.UserAns;
@@ -59,7 +60,7 @@ public class FirebaseService {
         return null;
     }
 
-    // Update Ans Message by UserId for Evaluating Essay
+    // Update UserAns by UserId --> Evaluating Essay
     public String updateAnsEssayFromUserId(String userId, List<UserAns> userAns, List<ExpectedAns> expectedAns)
             throws InterruptedException, ExecutionException {
         Query query = firestore.collection("message").whereEqualTo("userId", userId);
@@ -76,8 +77,8 @@ public class FirebaseService {
         }
     }
 
-    // Update UserAns and Score by UserId
-    public String updateAnsAndScoreFromUserId(String userId, List<UserAns> userAns, float score)
+    // Update UserAns and Score by UserId --> Storing multichoice evaluation
+    public String updateAnsAndScoreMultiscoreFromUserId(String userId, List<UserAns> userAns, float score)
             throws InterruptedException, ExecutionException {
         Query query = firestore.collection("message").whereEqualTo("userId", userId);
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
@@ -85,6 +86,22 @@ public class FirebaseService {
         if (!querySnapshot.get().isEmpty()) {
             DocumentReference docRef = querySnapshot.get().getDocuments().get(0).getReference();
             ApiFuture<WriteResult> writeResult = docRef.update("userAns", userAns, "score", score);
+
+            return "Updated userAns for userId: " + userId + " at " + writeResult.get().getUpdateTime();
+        } else {
+            return "Document with userId: " + userId + " not found.";
+        }
+    }
+
+    // Update Evaluation by UserId
+    public String updateEvaluationFromUserId(String userId, List<Evaluation> evaluations)
+            throws InterruptedException, ExecutionException {
+        Query query = firestore.collection("message").whereEqualTo("userId", userId);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+        if (!querySnapshot.get().isEmpty()) {
+            DocumentReference docRef = querySnapshot.get().getDocuments().get(0).getReference();
+            ApiFuture<WriteResult> writeResult = docRef.update("evaluations", evaluations);
 
             return "Updated userAns for userId: " + userId + " at " + writeResult.get().getUpdateTime();
         } else {

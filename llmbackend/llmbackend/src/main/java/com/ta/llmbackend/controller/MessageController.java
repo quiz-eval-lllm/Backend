@@ -50,7 +50,7 @@ public class MessageController {
         // Send message to rabbitMQ
         String responseRabbitMQ = rabbitMQService.sendMsgRequest(newMessage);
 
-        return ResponseUtil.okResponse(newMessage, "Success uploading data to DB and message to RabbitMQ");
+        return ResponseUtil.okResponse(newMessage, responseRabbitMQ);
     }
 
     // POST for generating essay
@@ -102,30 +102,32 @@ public class MessageController {
         List<String> ansMultichoiceList = messageService.getAnsMultichoice(userId);
 
         // Calculate
-        float finalScore = messageService.calculateMultichoice(answerList, ansMultichoiceList);
+        float finalScore = messageService.calculateMultichoice(userId, answerList, ansMultichoiceList);
 
         // Update Message
-        String responseDb = messageService.updateAnsAndScore(userId, answerList, finalScore);
+        String responseDb = messageService.updateUserAnsAndScoreMultiscore(userId, answerList, finalScore);
 
-        return ResponseUtil.okResponse(finalScore, "Success calculating score");
+        return ResponseUtil.okResponse(finalScore, "Success calculating multiple choice score");
     }
 
     // POST for evaluating essay
     @PostMapping("/essay/evaluate/{userId}")
     public ResponseEntity<Object> evaluateEssay(@PathVariable("userId") String userId,
-            @RequestBody List<String> answerList) throws InterruptedException, ExecutionException {
+            @RequestBody List<String> answerList)
+            throws InterruptedException, ExecutionException, JsonProcessingException {
 
         // Get konteks from message
         List<ExpectedAns> expectedAns = messageService.getExpectedAns(userId);
 
         // Send message to db
-        String responseDb = messageService.updateUserAndExpectedAnsEssay(userId, answerList, expectedAns);
+        String responseDb = messageService.updateUserAnsAndExpectedAnsEssay(userId, answerList, expectedAns);
 
         // Send message to rabbitMQ
         Message message = messageService.getMessage(userId);
-        String responseRabbitMQ = firebaseService.sendMessage(message);
+        String responseRabbitMQ = rabbitMQService.sendMsgRequest(message);
 
-        return ResponseUtil.okResponse(responseRabbitMQ, "Success calculating score");
+        // TODO: response content should be final score
+        return ResponseUtil.okResponse(responseRabbitMQ, "Success calculating essay score");
     }
 
 }
