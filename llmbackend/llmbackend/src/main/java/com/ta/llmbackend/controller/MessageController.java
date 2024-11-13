@@ -130,4 +130,12 @@ public class MessageController {
         return ResponseUtil.okResponse(responseRabbitMQ, "Success calculating essay score");
     }
 
+    // GET all data
+    @GetMapping("/quiz")
+    public ResponseEntity<Object> getAllData() throws InterruptedException, ExecutionException {
+        List<Message> messageList = messageService.getAllMessage();
+
+        return ResponseUtil.okResponse(messageList, "Success fetching all data in db");
+    }
+
 }

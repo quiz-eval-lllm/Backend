@@ -26,6 +26,20 @@ public class FirebaseService {
         return "Saved data for id: " + message.getUserId() + ", with: " + data.get().getId();
     }
 
+    // Get all message
+    public List<Message> getAllMessages() throws InterruptedException, ExecutionException {
+        ApiFuture<QuerySnapshot> querySnapshot = firestore.collection("message").get();
+
+        List<Message> messageList = new ArrayList<>();
+
+        for (QueryDocumentSnapshot document : querySnapshot.get().getDocuments()) {
+            Message message = document.toObject(Message.class);
+            messageList.add(message);
+        }
+
+        return messageList;
+    }
+
     // Get Message by UserId
     public Message getMessageFromUserId(String userId) throws InterruptedException, ExecutionException {
         Query query = firestore.collection("message").whereEqualTo("userId", userId);

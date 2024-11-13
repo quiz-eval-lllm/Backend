@@ -35,6 +35,11 @@ public class MessageService {
 
     }
 
+    // Get all instance
+    public List<Message> getAllMessage() throws InterruptedException, ExecutionException {
+        return firebaseService.getAllMessages();
+    }
+
     // Get instance by userId
     public Message getMessage(String userId) throws InterruptedException, ExecutionException {
         return firebaseService.getMessageFromUserId(userId);
