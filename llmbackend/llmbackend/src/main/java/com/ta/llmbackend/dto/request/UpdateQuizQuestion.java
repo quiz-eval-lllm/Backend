@@ -1,5 +1,6 @@
-package com.ta.llmbackend.model;
+package com.ta.llmbackend.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,9 +8,7 @@ import lombok.Setter;
 @Data
 @Setter
 @Getter
-public class ResponseMultiChoice {
-
-    private String id;
+public class UpdateQuizQuestion {
 
     private String question;
 

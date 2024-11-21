@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../../../llmbackend/inference_example"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "interactive"
+  }
+}

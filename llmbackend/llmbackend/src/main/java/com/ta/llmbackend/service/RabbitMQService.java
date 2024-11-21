@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ta.llmbackend.model.Message;
+import com.ta.llmbackend.model.Package;
 
 @Service
 public class RabbitMQService {
@@ -24,18 +24,20 @@ public class RabbitMQService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public String sendMsgRequest(Message message) throws JsonProcessingException {
+    public String sendMsgRequest(Package packageMsg) throws JsonProcessingException {
 
         Map<String, Object> msgData = new HashMap<>();
-        msgData.put("userId", message.getUserId());
-        msgData.put("reqType", message.getReqType());
+        msgData.put("userId", packageMsg.getCreator().getUserId());
+        msgData.put("reqType", packageMsg.getType());
 
-        System.out.println(" [client] Requesting process(userId: " + message.getUserId() + ", reqType: "
-                + message.getReqType() + ")");
+        System.out.println(" [client] Requesting process(userId: " +
+                packageMsg.getCreator().getUserId() + ", reqType: "
+                + packageMsg.getType() + ")");
 
         // Send message to queue and receive the response as a byte array
         String messageToServer = objectMapper.writeValueAsString(msgData);
-        Object response = rabbitTemplate.convertSendAndReceive(msgExchange.getName(), "rpc", messageToServer);
+        Object response = rabbitTemplate.convertSendAndReceive(msgExchange.getName(),
+                "rpc", messageToServer);
 
         // Convert the response to a String if it's a byte array
         if (response instanceof byte[]) {
