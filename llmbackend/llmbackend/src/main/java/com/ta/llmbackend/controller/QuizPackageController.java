@@ -3,6 +3,7 @@ package com.ta.llmbackend.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.ta.llmbackend.service.RabbitMQService;
 import com.ta.llmbackend.util.ResponseUtil;
 import com.ta.llmbackend.dto.request.GenerateQuizReq;
 import com.ta.llmbackend.dto.request.UpdateQuizReq;
+import com.ta.llmbackend.dto.response.GenerateQuizRPCResponse;
 import com.ta.llmbackend.model.Package;
 import com.ta.llmbackend.model.QuizActivities;
 
@@ -49,12 +51,19 @@ public class QuizPackageController {
     @PostMapping("")
     public ResponseEntity<Object> generateQuiz(@Valid @RequestBody GenerateQuizReq request) throws IOException {
 
-        Package temp = packageService.createNewPackage(request);
+        Package quizPackage = packageService.createNewPackage(request);
 
-        // TODO: Send message to rabbitMq
-        // String rabbitMQResponse = rabbitMQService.sendMsgRequest(temp);
+        // Send message to rabbitMQ queue
+        Map<String, Object> rabbitMQResponse = rabbitMQService.sendMsgForGenerate(quizPackage);
+        String packageIdContent = (String) rabbitMQResponse.get("package_id");
 
-        return ResponseUtil.okResponse(temp, "rabbitMQResponse");
+        // Get question from packageIdContent
+        // Map to the response {packageId, List<questionId>}
+        // TODO: question list
+        GenerateQuizRPCResponse response = new GenerateQuizRPCResponse();
+        response.setPackageId(packageIdContent);
+
+        return ResponseUtil.okResponse(response, "Successfully generating quiz package");
     }
 
     // GET quiz package

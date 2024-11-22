@@ -1,7 +1,9 @@
 package com.ta.llmbackend.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,30 +26,60 @@ public class RabbitMQService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public String sendMsgRequest(Package packageMsg) throws JsonProcessingException {
+    // Sending message for generating quiz
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> sendMsgForGenerate(Package packageMsg) throws JsonProcessingException {
 
         Map<String, Object> msgData = new HashMap<>();
-        msgData.put("userId", packageMsg.getCreator().getUserId());
+        msgData.put("packageId", packageMsg.getPackageId());
         msgData.put("reqType", packageMsg.getType());
 
-        System.out.println(" [client] Requesting process(userId: " +
-                packageMsg.getCreator().getUserId() + ", reqType: "
+        System.out.println(" [client] Requesting quiz generating process(package_id: " +
+                packageMsg.getPackageId() + ", reqType: "
                 + packageMsg.getType() + ")");
 
-        // Send message to queue and receive the response as a byte array
         String messageToServer = objectMapper.writeValueAsString(msgData);
         Object response = rabbitTemplate.convertSendAndReceive(msgExchange.getName(),
                 "rpc", messageToServer);
 
-        // Convert the response to a String if it's a byte array
         if (response instanceof byte[]) {
-            return new String((byte[]) response);
+            String responseString = new String((byte[]) response);
+            return objectMapper.readValue(responseString, Map.class);
         } else if (response instanceof String) {
-            return (String) response;
+            return objectMapper.readValue((String) response, Map.class);
         } else {
-            return "Invalid response type received";
+            throw new IllegalArgumentException("Invalid response type received");
         }
 
+    }
+
+    // Sending message for essay
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> sendMsgForEvaluateEssay(int type, UUID quizId, List<UUID> evalIdList)
+            throws JsonProcessingException {
+
+        Map<String, Object> msgData = new HashMap<>();
+        msgData.put("quizId", quizId);
+        msgData.put("evalIdList", evalIdList);
+        msgData.put("reqType", type);
+
+        System.out.println(" [client] Requesting quiz evaluation process(quiz_id: " +
+                quizId + ", reqType: "
+                + type + ")");
+
+        String messageToServer = objectMapper.writeValueAsString(msgData);
+        Object response = rabbitTemplate.convertSendAndReceive(msgExchange.getName(),
+                "rpc", messageToServer);
+
+        // Convert the response to a map
+        if (response instanceof byte[]) {
+            String responseString = new String((byte[]) response);
+            return objectMapper.readValue(responseString, Map.class);
+        } else if (response instanceof String) {
+            return objectMapper.readValue((String) response, Map.class);
+        } else {
+            throw new IllegalArgumentException("Invalid response type received");
+        }
     }
 
 }

@@ -1,6 +1,8 @@
 package com.ta.llmbackend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ta.llmbackend.dto.request.EvalQuizReq;
 import com.ta.llmbackend.dto.response.EvalResponse;
 import com.ta.llmbackend.model.Evaluation;
 import com.ta.llmbackend.service.EvaluationService;
+import com.ta.llmbackend.service.RabbitMQService;
 import com.ta.llmbackend.util.ResponseUtil;
 
 import jakarta.validation.Valid;
@@ -26,6 +30,9 @@ public class EvaluationController {
 
     @Autowired
     private EvaluationService evaluationService;
+
+    @Autowired
+    private RabbitMQService rabbitMQService;
 
     // POST evaluate multiple choice
     @PostMapping("/multichoice")
@@ -40,13 +47,23 @@ public class EvaluationController {
     }
 
     @PostMapping("/essay")
-    public ResponseEntity<Object> evaluateEssay(@Valid @RequestBody EvalQuizReq evalQuizReq) {
+    public ResponseEntity<Object> evaluateEssay(@Valid @RequestBody EvalQuizReq evalQuizReq)
+            throws JsonProcessingException {
 
         List<Evaluation> evalList = evaluationService.createEvaluation(evalQuizReq);
 
-        // TODO: Send message to rabbitMq containing all eval key, quizId
+        List<UUID> evalIdList = new ArrayList<>();
 
-        return ResponseUtil.okResponse(null, null);
+        for (Evaluation evaluation : evalList) {
+            evalIdList.add(evaluation.getEvalId());
+        }
+
+        // Send message to rabbitMQ queue
+        Map<String, Object> rabbitMQResponse = rabbitMQService.sendMsgForEvaluateEssay(2,
+                UUID.fromString(evalQuizReq.getQuizId()), evalIdList);
+
+        return ResponseUtil.okResponse(rabbitMQResponse,
+                "Successfully generating quiz activity with id: " + evalQuizReq.getQuizId());
     }
 
     // GET all evaluation
