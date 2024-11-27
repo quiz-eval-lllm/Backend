@@ -63,7 +63,7 @@ public class EvaluationController {
                 UUID.fromString(evalQuizReq.getQuizId()), evalIdList);
 
         return ResponseUtil.okResponse(rabbitMQResponse,
-                "Successfully generating quiz activity with id: " + evalQuizReq.getQuizId());
+                "Succesfully calculated quiz with id: " + evalQuizReq.getQuizId());
     }
 
     // GET all evaluation
