@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.ta.llmbackend.dto.request.GenerateUserReq;
@@ -54,7 +55,7 @@ public class UserService {
                     String.valueOf(users.getRole()));
         }
 
-        throw new BadRequestException("Failed to authenticate");
+        throw new AccessDeniedException("Failed to authenticate");
 
     }
 
