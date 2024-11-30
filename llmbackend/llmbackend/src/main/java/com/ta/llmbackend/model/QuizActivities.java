@@ -56,7 +56,7 @@ public class QuizActivities {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "users", referencedColumnName = "user_id")
     @JsonIgnoreProperties("listQuizActivites")
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "package", referencedColumnName = "package_id")

@@ -33,7 +33,7 @@ import lombok.Setter;
 @Table(name = "users", schema = "backend")
 @SQLDelete(sql = "UPDATE backend.users SET is_deleted = true WHERE user_id = ?")
 @SQLRestriction("is_deleted = false")
-public class User {
+public class Users {
 
     @Id
     @Column(name = "user_id")
@@ -48,6 +48,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @Column(name = "name")

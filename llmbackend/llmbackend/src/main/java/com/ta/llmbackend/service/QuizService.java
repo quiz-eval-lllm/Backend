@@ -13,7 +13,7 @@ import com.ta.llmbackend.exception.BadRequestException;
 import com.ta.llmbackend.model.Evaluation;
 import com.ta.llmbackend.model.Package;
 import com.ta.llmbackend.model.QuizActivities;
-import com.ta.llmbackend.model.User;
+import com.ta.llmbackend.model.Users;
 import com.ta.llmbackend.repository.EvaluationDb;
 import com.ta.llmbackend.repository.QuizActivitiesDb;
 
@@ -35,7 +35,7 @@ public class QuizService {
     // Create quiz activity
     public QuizActivities createQuizActivity(UUID userId, UUID packageId) {
 
-        User user = userService.getUserById(userId);
+        Users user = userService.getUserById(userId);
         Package packageQuiz = packageService.getPackageById(packageId);
 
         if (user.getRole() == 1) {

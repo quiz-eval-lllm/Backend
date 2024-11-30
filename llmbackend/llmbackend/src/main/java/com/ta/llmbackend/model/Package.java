@@ -55,7 +55,7 @@ public class Package {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "users", referencedColumnName = "user_id")
     @JsonIgnoreProperties("listPackage")
-    private User creator;
+    private Users creator;
 
     @Column(name = "title")
     private String title;

@@ -6,11 +6,14 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.ta.llmbackend.dto.request.GenerateUserReq;
 import com.ta.llmbackend.dto.request.UpdateUserReq;
-import com.ta.llmbackend.model.User;
+import com.ta.llmbackend.dto.request.UserAuthReq;
+import com.ta.llmbackend.model.Users;
 import com.ta.llmbackend.repository.UserDb;
+import com.ta.llmbackend.security.JwtUtils;
 import com.ta.llmbackend.exception.BadRequestException;;
 
 @Service
@@ -19,38 +22,58 @@ public class UserService {
     @Autowired
     private UserDb userDb;
 
-    // Create user
-    public User createNewUser(GenerateUserReq userReq) {
+    @Autowired
+    JwtUtils jwtUtils;
 
-        User user = new User();
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    // Create user
+    public Users createNewUser(GenerateUserReq userReq) {
+
+        Users user = new Users();
 
         user.setUserId(UUID.fromString(userReq.getId()));
         user.setName(userReq.getName());
-        user.setPassword(userReq.getPassword());
+        user.setPassword(bCryptPasswordEncoder.encode(userReq.getPassword()));
         user.setEmail(userReq.getEmail());
         user.setRole(userReq.getRole());
 
-        User temp = userDb.save(user);
+        Users temp = userDb.save(user);
 
         return temp;
     }
 
+    // Authenticate user
+    @Deprecated
+    public String authenticateUser(UserAuthReq userAuthReq) {
+
+        Users users = getUserByEmail(userAuthReq.getEmail());
+
+        if (bCryptPasswordEncoder.matches(userAuthReq.getPassword(), users.getPassword())) {
+            return jwtUtils.generateToken(users.getEmail(), users.getUserId(),
+                    String.valueOf(users.getRole()));
+        }
+
+        throw new BadRequestException("Failed to authenticate");
+
+    }
+
     // Read users
-    public List<User> getAllUser() {
+    public List<Users> getAllUser() {
 
         return userDb.findAll(Sort.by(Sort.Order.asc("name")));
     }
 
     // Read user by role
-    public List<User> getUserByRole(int role) {
+    public List<Users> getUserByRole(int role) {
 
         return userDb.findByRole(role, Sort.by(Sort.Order.asc("name")));
     }
 
     // Read user by id
-    public User getUserById(UUID userId) {
+    public Users getUserById(UUID userId) {
 
-        for (User user : getAllUser()) {
+        for (Users user : getAllUser()) {
             if (user.getUserId().equals(userId)) {
                 return user;
             }
@@ -58,10 +81,21 @@ public class UserService {
         throw new BadRequestException("User with id: " + userId + " not found");
     }
 
-    // Update user by id
-    public User updateUserById(UUID userId, UpdateUserReq updateUserReq) {
+    // Read user by email
+    public Users getUserByEmail(String email) {
 
-        User user = getUserById(userId);
+        for (Users user : getAllUser()) {
+            if (user.getEmail().equals(email)) {
+                return user;
+            }
+        }
+        throw new BadRequestException("User with email: " + email + " not found");
+    }
+
+    // Update user by id
+    public Users updateUserById(UUID userId, UpdateUserReq updateUserReq) {
+
+        Users user = getUserById(userId);
 
         if (user != null) {
             if (updateUserReq.getName() != "") {
@@ -69,7 +103,7 @@ public class UserService {
             }
 
             if (updateUserReq.getPassword() != "") {
-                user.setPassword(updateUserReq.getPassword());
+                user.setPassword(bCryptPasswordEncoder.encode(updateUserReq.getPassword()));
             }
 
             return userDb.save(user);
@@ -81,7 +115,7 @@ public class UserService {
     // Delete user
     public void deleteUser(UUID userId) {
 
-        User user = getUserById(userId);
+        Users user = getUserById(userId);
 
         userDb.delete(user);
     }

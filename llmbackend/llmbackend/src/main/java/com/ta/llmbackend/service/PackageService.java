@@ -14,7 +14,7 @@ import com.ta.llmbackend.dto.request.UpdateQuizReq;
 import com.ta.llmbackend.exception.BadRequestException;
 import com.ta.llmbackend.model.Package;
 import com.ta.llmbackend.model.QuizActivities;
-import com.ta.llmbackend.model.User;
+import com.ta.llmbackend.model.Users;
 import com.ta.llmbackend.repository.PackageDb;
 
 @Service
@@ -31,7 +31,7 @@ public class PackageService {
 
         Package newPackage = new Package();
 
-        User user = userService.getUserById(UUID.fromString(quizReq.getUserId()));
+        Users user = userService.getUserById(UUID.fromString(quizReq.getUserId()));
 
         newPackage.setCreator(user);
         newPackage.setTitle(quizReq.getTitle());
@@ -82,7 +82,7 @@ public class PackageService {
     // Read package by finish status
     public List<Package> fiterPackageByFinished(UUID userId, boolean is_finished) {
 
-        User user = userService.getUserById(userId);
+        Users user = userService.getUserById(userId);
         List<QuizActivities> userQuizActivitiesList = user.getListQuizActivites();
         List<Package> packageUserListFiltered = new ArrayList<>();
 

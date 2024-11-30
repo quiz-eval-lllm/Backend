@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ta.llmbackend.dto.request.GenerateUserReq;
 import com.ta.llmbackend.dto.request.UpdateUserReq;
-import com.ta.llmbackend.model.User;
+import com.ta.llmbackend.dto.request.UserAuthReq;
+import com.ta.llmbackend.dto.response.AuthResponse;
+import com.ta.llmbackend.model.Users;
 import com.ta.llmbackend.service.UserService;
 import com.ta.llmbackend.util.ResponseUtil;
 
@@ -35,18 +37,33 @@ public class UserController {
     @PostMapping("")
     public ResponseEntity<Object> addUser(@Valid @RequestBody GenerateUserReq userReq) {
 
-        User newUser = userService.createNewUser(userReq);
+        Users newUser = userService.createNewUser(userReq);
 
         return ResponseUtil.okResponse(newUser, "New user successfully added");
     }
 
-    // TODO: POST for authenticating user --> Login
+    // POST for authenticating user --> Login
+    @Deprecated
+    @PostMapping("/auth")
+    public ResponseEntity<Object> authentication(@Valid @RequestBody UserAuthReq authReq) {
+
+        String token = userService.authenticateUser(authReq);
+
+        if (token != null) {
+            AuthResponse authResponse = new AuthResponse();
+            authResponse.setToken(token);
+            authResponse.setUserInfo(userService.getUserByEmail(authReq.getEmail()));
+            return ResponseUtil.okResponse(authResponse, "Login successfully");
+        } else {
+            return ResponseUtil.okResponse(null, "Failed to authenticate");
+        }
+    }
 
     // GET users
     @GetMapping("")
     public ResponseEntity<Object> getUser(@RequestParam(value = "role", required = false) String searchRole) {
 
-        List<User> listUser = new ArrayList<>();
+        List<Users> listUser = new ArrayList<>();
 
         if (searchRole == null || searchRole == "") {
             listUser = userService.getAllUser();
@@ -65,7 +82,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable("id") String userId) {
 
-        User user = userService.getUserById(UUID.fromString(userId));
+        Users user = userService.getUserById(UUID.fromString(userId));
 
         return ResponseUtil.okResponse(user, "Successfully retrieve user with id: " + user.getUserId());
 
@@ -76,7 +93,7 @@ public class UserController {
     public ResponseEntity<Object> updateUser(@RequestBody UpdateUserReq updateUserReq,
             @PathVariable("id") String userId) {
 
-        User user = userService.updateUserById(UUID.fromString(userId), updateUserReq);
+        Users user = userService.updateUserById(UUID.fromString(userId), updateUserReq);
 
         return ResponseUtil.okResponse(user, "User with id: " + userId + " successfully updated");
     }
