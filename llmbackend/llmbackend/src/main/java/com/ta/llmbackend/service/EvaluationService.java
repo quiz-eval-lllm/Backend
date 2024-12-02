@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,15 @@ public class EvaluationService {
             Evaluation evaluation = new Evaluation();
 
             evaluation.setQuestionId(UUID.fromString(answerInfo.getQuestionId()));
-            evaluation.setQuizActivities(quizService.getQuizActivitiesById(UUID.fromString(evalQuizReq.getQuizId())));
+
+            if (evalQuizReq.getQuizId() != null && !evalQuizReq.getQuizId().isEmpty()) {
+                evaluation
+                        .setQuizActivities(quizService.getQuizActivitiesById(UUID.fromString(evalQuizReq.getQuizId())));
+            } else {
+                evaluation
+                        .setQuizActivities(null);
+            }
+
             evaluation.setUserAnswer(answerInfo.getAnswer());
 
             Evaluation temp = evaluationDb.save(evaluation);
@@ -51,7 +60,9 @@ public class EvaluationService {
             evalList.add(temp);
         }
 
-        quizService.finishedQuizActivity(UUID.fromString(evalQuizReq.getQuizId()));
+        if (evalQuizReq.getQuizId() != null && !evalQuizReq.getQuizId().isEmpty()) {
+            quizService.finishedQuizActivity(UUID.fromString(evalQuizReq.getQuizId()));
+        }
 
         return evalList;
     }

@@ -1,6 +1,7 @@
 package com.ta.llmbackend.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,9 +60,16 @@ public class EvaluationController {
             evalIdList.add(evaluation.getEvalId());
         }
 
+        Map<String, Object> rabbitMQResponse = new HashMap<>();
+
         // Send message to rabbitMQ queue
-        Map<String, Object> rabbitMQResponse = rabbitMQService.sendMsgForEvaluateEssay(2,
-                UUID.fromString(evalQuizReq.getQuizId()), evalIdList);
+        if (evalQuizReq.getQuizId() != null && !evalQuizReq.getQuizId().isEmpty()) {
+            rabbitMQResponse = rabbitMQService.sendMsgForEvaluateEssay(2,
+                    UUID.fromString(evalQuizReq.getQuizId()), evalIdList);
+        } else {
+            rabbitMQResponse = rabbitMQService.sendMsgForEvaluateEssay(2,
+                    null, evalIdList);
+        }
 
         return ResponseUtil.okResponse(rabbitMQResponse,
                 "Succesfully calculated quiz with id: " + evalQuizReq.getQuizId());
