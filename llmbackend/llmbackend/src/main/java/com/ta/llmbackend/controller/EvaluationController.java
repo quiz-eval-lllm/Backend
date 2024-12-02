@@ -40,6 +40,7 @@ public class EvaluationController {
 
         List<Evaluation> evalList = evaluationService.createEvaluation(evalQuizReq);
 
+        // TODO: For future development use each question ids instead
         EvalResponse evalResponse = evaluationService.calculateMultiChoice(UUID.fromString(evalQuizReq.getQuizId()),
                 evalList);
 

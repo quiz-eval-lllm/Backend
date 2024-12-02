@@ -38,8 +38,8 @@ public class PackageService {
         newPackage.setCategory(quizReq.getCategory());
         newPackage.setType(quizReq.getType());
         newPackage.setPrompt(quizReq.getPrompt());
-        // TODO: Handle pdf context
-        // newPackage.setContext(quizReq.getContext().getBytes());
+        newPackage.setLanguage(quizReq.getLanguage());
+        newPackage.setContext(quizReq.getContextUrl());
 
         Package temp = packageDb.save(newPackage);
 

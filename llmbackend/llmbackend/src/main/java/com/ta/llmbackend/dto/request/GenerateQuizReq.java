@@ -25,9 +25,14 @@ public class GenerateQuizReq {
     @NotNull
     private int type;
 
-    @NotBlank
     private String prompt;
 
+    @NotBlank
+    private String language;
+
     private MultipartFile context;
+
+    @NotBlank
+    private String contextUrl;
 
 }

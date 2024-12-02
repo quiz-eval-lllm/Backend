@@ -43,7 +43,7 @@ public class Evaluation {
     @JsonIgnoreProperties("evaluationList")
     private QuizActivities quizActivities;
 
-    @Column(name = "user_answer")
+    @Column(name = "user_answer", columnDefinition = "TEXT")
     private String userAnswer;
 
     @Column(name = "score")

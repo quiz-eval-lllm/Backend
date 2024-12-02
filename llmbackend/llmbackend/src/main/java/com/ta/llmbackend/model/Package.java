@@ -63,17 +63,17 @@ public class Package {
     @Column(name = "category")
     private String category;
 
+    @Column(name = "lang")
+    private String language;
+
     @Column(name = "type")
     private int type;
 
     @Column(name = "prompt")
     private String prompt;
 
-    @Basic(optional = true)
     @Column(name = "context")
-    @Lob
-    @JsonIgnore
-    private byte[] context;
+    private String context;
 
     @OneToMany(mappedBy = "packageEssay", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore

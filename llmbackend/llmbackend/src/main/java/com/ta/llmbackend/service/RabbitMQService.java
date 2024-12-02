@@ -33,6 +33,7 @@ public class RabbitMQService {
         Map<String, Object> msgData = new HashMap<>();
         msgData.put("packageId", packageMsg.getPackageId());
         msgData.put("reqType", packageMsg.getType());
+        msgData.put("language", packageMsg.getLanguage());
 
         System.out.println(" [client] Requesting quiz generating process(package_id: " +
                 packageMsg.getPackageId() + ", reqType: "

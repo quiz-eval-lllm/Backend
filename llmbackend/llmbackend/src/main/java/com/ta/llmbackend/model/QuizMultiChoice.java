@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
@@ -40,13 +41,15 @@ public class QuizMultiChoice {
     @JsonIgnore
     private Package packageMultiChoice;
 
-    @Column(name = "question")
+    @Column(name = "question", columnDefinition = "TEXT")
+    @Lob
     private String question;
 
-    @Column(name = "answer")
+    @Column(name = "answer", columnDefinition = "TEXT")
+    @Lob
     private String answer;
 
-    @Column(name = "explanation")
+    @Column(name = "explanation", columnDefinition = "TEXT")
     private String explanation;
 
     @Column(name = "is_deleted")

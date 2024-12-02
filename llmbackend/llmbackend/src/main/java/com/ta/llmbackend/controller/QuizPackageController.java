@@ -25,7 +25,6 @@ import com.ta.llmbackend.service.RabbitMQService;
 import com.ta.llmbackend.util.ResponseUtil;
 import com.ta.llmbackend.dto.request.GenerateQuizReq;
 import com.ta.llmbackend.dto.request.UpdateQuizReq;
-import com.ta.llmbackend.dto.response.GenerateQuizRPCResponse;
 import com.ta.llmbackend.model.Package;
 import com.ta.llmbackend.model.QuizActivities;
 
@@ -55,15 +54,8 @@ public class QuizPackageController {
 
         // Send message to rabbitMQ queue
         Map<String, Object> rabbitMQResponse = rabbitMQService.sendMsgForGenerate(quizPackage);
-        String packageIdContent = (String) rabbitMQResponse.get("package_id");
 
-        // Get question from packageIdContent
-        // Map to the response {packageId, List<questionId>}
-        // TODO: question list
-        GenerateQuizRPCResponse response = new GenerateQuizRPCResponse();
-        response.setPackageId(packageIdContent);
-
-        return ResponseUtil.okResponse(response, "Successfully generating quiz package");
+        return ResponseUtil.okResponse(rabbitMQResponse, "Successfully generating quiz package");
     }
 
     // GET quiz package
