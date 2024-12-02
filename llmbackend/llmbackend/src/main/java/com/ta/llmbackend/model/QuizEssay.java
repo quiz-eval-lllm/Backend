@@ -42,11 +42,9 @@ public class QuizEssay {
     private Package packageEssay;
 
     @Column(name = "question", columnDefinition = "TEXT")
-    @Lob
     private String question;
 
     @Column(name = "context", columnDefinition = "TEXT")
-    @Lob
     private String context;
 
     @Column(name = "is_deleted")

@@ -42,11 +42,9 @@ public class QuizMultiChoice {
     private Package packageMultiChoice;
 
     @Column(name = "question", columnDefinition = "TEXT")
-    @Lob
     private String question;
 
     @Column(name = "answer", columnDefinition = "TEXT")
-    @Lob
     private String answer;
 
     @Column(name = "explanation", columnDefinition = "TEXT")
