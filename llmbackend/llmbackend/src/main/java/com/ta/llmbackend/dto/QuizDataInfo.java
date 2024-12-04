@@ -13,9 +13,9 @@ public class QuizDataInfo {
 
     private UUID packageId;
 
-    private String packageTitle;
+    private String packageModule;
 
-    private String packageCategory;
+    private String packageSubject;
 
     private int type;
 

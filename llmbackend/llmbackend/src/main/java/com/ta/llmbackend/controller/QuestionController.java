@@ -58,8 +58,8 @@ public class QuestionController {
             QuizMultiChoiceResponse quizMultiChoiceResponse = new QuizMultiChoiceResponse();
 
             quizDataInfo.setPackageId(questionMultiChoice.getPackageMultiChoice().getPackageId());
-            quizDataInfo.setPackageTitle(questionMultiChoice.getPackageMultiChoice().getTitle());
-            quizDataInfo.setPackageCategory(questionMultiChoice.getPackageMultiChoice().getCategory());
+            quizDataInfo.setPackageSubject(questionMultiChoice.getPackageMultiChoice().getSubject());
+            quizDataInfo.setPackageModule(questionMultiChoice.getPackageMultiChoice().getModule());
             quizDataInfo.setType(0);
             quizDataInfo.setCreatorId(questionMultiChoice.getPackageMultiChoice().getCreator().getUserId());
 
@@ -80,8 +80,8 @@ public class QuestionController {
                 QuizEssayResponse quizEssayResponse = new QuizEssayResponse();
 
                 quizDataInfo.setPackageId(questionEssay.getPackageEssay().getPackageId());
-                quizDataInfo.setPackageTitle(questionEssay.getPackageEssay().getTitle());
-                quizDataInfo.setPackageCategory(questionEssay.getPackageEssay().getCategory());
+                quizDataInfo.setPackageSubject(questionEssay.getPackageEssay().getSubject());
+                quizDataInfo.setPackageModule(questionEssay.getPackageEssay().getModule());
                 quizDataInfo.setType(1);
                 quizDataInfo.setCreatorId(questionEssay.getPackageEssay().getCreator().getUserId());
 

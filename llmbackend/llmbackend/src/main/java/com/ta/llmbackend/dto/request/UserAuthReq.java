@@ -11,7 +11,7 @@ import lombok.Setter;
 public class UserAuthReq {
 
     @NotBlank
-    private String email;
+    private String username;
 
     @NotBlank
     private String password;

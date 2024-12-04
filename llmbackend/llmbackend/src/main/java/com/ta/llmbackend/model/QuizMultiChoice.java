@@ -1,5 +1,6 @@
 package com.ta.llmbackend.model;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.SQLDelete;
@@ -7,7 +8,9 @@ import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
@@ -43,6 +46,11 @@ public class QuizMultiChoice {
 
     @Column(name = "question", columnDefinition = "TEXT")
     private String question;
+
+    @ElementCollection
+    @CollectionTable(name = "multichoice_options", joinColumns = @JoinColumn(name = "multichoice_id"))
+    @Column(name = "option")
+    private List<String> options;
 
     @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;

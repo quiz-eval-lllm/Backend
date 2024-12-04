@@ -52,7 +52,7 @@ public class UserController {
         if (token != null) {
             AuthResponse authResponse = new AuthResponse();
             authResponse.setToken(token);
-            authResponse.setUserInfo(userService.getUserByEmail(authReq.getEmail()));
+            authResponse.setUserInfo(userService.getUserByName(authReq.getUsername()));
             return ResponseUtil.okResponse(authResponse, "Login successfully");
         } else {
             return ResponseUtil.okResponse(null, "Failed to authenticate");

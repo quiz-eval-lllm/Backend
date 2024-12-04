@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 public class UpdateQuizReq {
 
-    private String title;
+    private String module;
 
-    private String category;
+    private String subject;
 
 }

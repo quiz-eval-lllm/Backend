@@ -13,4 +13,8 @@ public class UpdateUserReq {
 
     private String password;
 
+    private String email;
+
+    private Integer role;
+
 }

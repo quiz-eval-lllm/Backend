@@ -28,15 +28,46 @@ public class UserService {
 
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
+    // Create Superadmin
+    public void addAdmin() {
+        List<Users> user = getUserByRole(0);
+
+        if (user.isEmpty()) {
+            Users admin = new Users();
+            admin.setUserId(UUID.fromString("01939099-4d0b-76ff-b8ad-a2091c502353"));
+            admin.setPassword(bCryptPasswordEncoder.encode("12345"));
+            admin.setName("admin");
+            admin.setRole(0);
+            userDb.save(admin);
+        }
+    }
+
     // Create user
     public Users createNewUser(GenerateUserReq userReq) {
 
-        Users user = new Users();
+        // Check if a user with the same name or email already exists
+        List<Users> existingUsers = getAllUser();
+        for (Users existingUser : existingUsers) {
+            if (existingUser.getName().equalsIgnoreCase(userReq.getName())) {
+                throw new BadRequestException("User with name: " + userReq.getName() + " already exists");
+            }
+            if (userReq.getEmail() != null && existingUser.getEmail() != null &&
+                    existingUser.getEmail().equalsIgnoreCase(userReq.getEmail())) {
+                throw new BadRequestException("User with email: " + userReq.getEmail() + " already exists");
+            }
+        }
 
+        Users user = new Users();
         user.setUserId(UUID.fromString(userReq.getId()));
         user.setName(userReq.getName());
         user.setPassword(bCryptPasswordEncoder.encode(userReq.getPassword()));
-        user.setEmail(userReq.getEmail());
+
+        if (userReq.getEmail() != null && !userReq.getEmail().isEmpty()) {
+            user.setEmail(userReq.getEmail());
+        } else {
+            user.setEmail(null);
+        }
+
         user.setRole(userReq.getRole());
 
         Users temp = userDb.save(user);
@@ -48,7 +79,7 @@ public class UserService {
     @Deprecated
     public String authenticateUser(UserAuthReq userAuthReq) {
 
-        Users users = getUserByEmail(userAuthReq.getEmail());
+        Users users = getUserByName(userAuthReq.getUsername());
 
         if (bCryptPasswordEncoder.matches(userAuthReq.getPassword(), users.getPassword())) {
             return jwtUtils.generateToken(users.getEmail(), users.getUserId(),
@@ -93,18 +124,38 @@ public class UserService {
         throw new BadRequestException("User with email: " + email + " not found");
     }
 
+    // Read user by name
+    public Users getUserByName(String name) {
+
+        for (Users user : getAllUser()) {
+            if (user.getName().equals(name)) {
+                return user;
+            }
+        }
+        throw new BadRequestException("User with name: " + name + " not found");
+    }
+
     // Update user by id
     public Users updateUserById(UUID userId, UpdateUserReq updateUserReq) {
 
         Users user = getUserById(userId);
 
         if (user != null) {
-            if (updateUserReq.getName() != "") {
+            if (updateUserReq.getName() != "" || !updateUserReq.getName().isEmpty()) {
                 user.setName(updateUserReq.getName());
             }
 
-            if (updateUserReq.getPassword() != "") {
+            if (updateUserReq.getPassword() != "" || !updateUserReq.getPassword().isEmpty()
+                    || updateUserReq.getPassword() != null) {
                 user.setPassword(bCryptPasswordEncoder.encode(updateUserReq.getPassword()));
+            }
+
+            if (updateUserReq.getEmail() != "" || !updateUserReq.getEmail().isEmpty()) {
+                user.setEmail(updateUserReq.getEmail());
+            }
+
+            if (updateUserReq.getRole() != null) {
+                user.setRole(updateUserReq.getRole());
             }
 
             return userDb.save(user);

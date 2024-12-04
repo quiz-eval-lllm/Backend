@@ -34,8 +34,15 @@ public class PackageService {
         Users user = userService.getUserById(UUID.fromString(quizReq.getUserId()));
 
         newPackage.setCreator(user);
-        newPackage.setTitle(quizReq.getTitle());
-        newPackage.setCategory(quizReq.getCategory());
+
+        if (quizReq.getModule() != null) {
+            newPackage.setModule(quizReq.getModule());
+        }
+
+        if (quizReq.getSubject() != null) {
+            newPackage.setSubject(quizReq.getSubject());
+        }
+
         newPackage.setType(quizReq.getType());
         newPackage.setPrompt(quizReq.getPrompt());
         newPackage.setLanguage(quizReq.getLanguage());
@@ -117,12 +124,12 @@ public class PackageService {
         Package quizPackage = getPackageById(packageId);
 
         if (quizPackage != null) {
-            if (updateQuizReq.getTitle() != "") {
-                quizPackage.setTitle(updateQuizReq.getTitle());
+            if (updateQuizReq.getModule() != "") {
+                quizPackage.setModule(updateQuizReq.getModule());
             }
 
-            if (updateQuizReq.getCategory() != "") {
-                quizPackage.setCategory(updateQuizReq.getCategory());
+            if (updateQuizReq.getSubject() != "") {
+                quizPackage.setSubject(updateQuizReq.getSubject());
             }
 
             return packageDb.save(quizPackage);

@@ -57,11 +57,11 @@ public class Package {
     @JsonIgnoreProperties("listPackage")
     private Users creator;
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "module")
+    private String module;
 
-    @Column(name = "category")
-    private String category;
+    @Column(name = "subject")
+    private String subject;
 
     @Column(name = "lang")
     private String language;

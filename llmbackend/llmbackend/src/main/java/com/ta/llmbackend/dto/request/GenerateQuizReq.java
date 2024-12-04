@@ -17,10 +17,10 @@ public class GenerateQuizReq {
     private String userId;
 
     @NotBlank
-    private String category;
+    private String module;
 
     @NotBlank
-    private String title;
+    private String subject;
 
     @NotNull
     private int type;
