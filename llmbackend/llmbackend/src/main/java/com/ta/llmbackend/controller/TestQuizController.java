@@ -57,7 +57,7 @@ public class TestQuizController {
                 Path path = Paths.get(uploadDirectory, fileName);
                 Files.write(path, file.getBytes());
 
-                fileLink = "http://localhost:8080/pdf_context/" + fileName;
+                fileLink = "http://34.16.76.175:8080/pdf_context/" + fileName;
 
                 // Create new package
                 generateQuizReq.setContextUrl(fileLink);
