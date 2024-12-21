@@ -58,10 +58,10 @@ public class TestQuizController {
                 Files.write(path, file.getBytes());
 
                 // For deployment
-                // fileLink = "http://34.67.44.123:8080/pdf_context/" + fileName;
+                fileLink = "http://34.67.44.123:8080/pdf_context/" + fileName;
 
                 // For deployment
-                fileLink = "http://localhost:8080/pdf_context/" + fileName;
+                // fileLink = "http://localhost:8080/pdf_context/" + fileName;
 
                 // Create new package
                 generateQuizReq.setContextUrl(fileLink);
