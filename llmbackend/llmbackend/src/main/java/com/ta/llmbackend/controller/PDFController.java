@@ -39,7 +39,7 @@ public class PDFController {
             Files.write(path, file.getBytes());
 
             // <=============== Deployed ===============>
-            String fileLink = "http://34.27.150.5/:8080/pdf_context/" + fileName;
+            String fileLink = "http://34.27.150.5:8080/pdf_context/" + fileName;
 
             // <=============== Local ===============>
             // String fileLink = "http://localhost:8080/pdf_context/" + fileName;
