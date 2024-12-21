@@ -38,10 +38,10 @@ public class PDFController {
             Path path = Paths.get(uploadDirectory, fileName);
             Files.write(path, file.getBytes());
 
-            // For deployment
+            // <=============== Local ===============>
             // String fileLink = "http://34.67.44.123:8080/pdf_context/" + fileName;
 
-            // For deployment
+            // <=============== Deployed ===============>
             String fileLink = "http://localhost:8080/pdf_context/" + fileName;
 
             return ResponseEntity.ok(fileLink);

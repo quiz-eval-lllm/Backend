@@ -29,9 +29,9 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     @Deprecated
-    public String generateToken(String email, UUID id, String role) {
+    public String generateToken(String username, UUID id, String role) {
         return Jwts.builder()
-                .subject(email)
+                .subject(username)
                 .claim("id", id.toString())
                 .claim("role", role)
                 .issuedAt(new Date())
@@ -41,7 +41,7 @@ public class JwtUtils {
     }
 
     @Deprecated
-    public String getEmailFromJwt(String token) {
+    public String getNameFromJwt(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).build().parseClaimsJws(token).getBody().getSubject();
     }
 

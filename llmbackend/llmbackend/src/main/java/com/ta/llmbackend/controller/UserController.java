@@ -34,12 +34,13 @@ public class UserController {
     private UserService userService;
 
     // POST for creating new user --> Sign Up
+    @Deprecated
     @PostMapping("")
     public ResponseEntity<Object> addUser(@Valid @RequestBody GenerateUserReq userReq) {
 
-        Users newUser = userService.createNewUser(userReq);
+        AuthResponse userResponse = userService.createNewUser(userReq);
 
-        return ResponseUtil.okResponse(newUser, "New user successfully added");
+        return ResponseUtil.okResponse(userResponse, "New user successfully added");
     }
 
     // POST for authenticating user --> Login

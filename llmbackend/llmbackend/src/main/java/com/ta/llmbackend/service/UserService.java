@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.ta.llmbackend.dto.request.GenerateUserReq;
 import com.ta.llmbackend.dto.request.UpdateUserReq;
 import com.ta.llmbackend.dto.request.UserAuthReq;
+import com.ta.llmbackend.dto.response.AuthResponse;
 import com.ta.llmbackend.model.Users;
 import com.ta.llmbackend.repository.UserDb;
 import com.ta.llmbackend.security.JwtUtils;
@@ -43,7 +44,8 @@ public class UserService {
     }
 
     // Create user
-    public Users createNewUser(GenerateUserReq userReq) {
+    @Deprecated
+    public AuthResponse createNewUser(GenerateUserReq userReq) {
 
         // Check if a user with the same name or email already exists
         List<Users> existingUsers = getAllUser();
@@ -72,7 +74,13 @@ public class UserService {
 
         Users temp = userDb.save(user);
 
-        return temp;
+        String token = jwtUtils.generateToken(user.getName(), user.getUserId(), String.valueOf(user.getRole()));
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setUserInfo(temp);
+        authResponse.setToken(token);
+
+        return authResponse;
     }
 
     // Authenticate user
@@ -82,7 +90,7 @@ public class UserService {
         Users users = getUserByName(userAuthReq.getUsername());
 
         if (bCryptPasswordEncoder.matches(userAuthReq.getPassword(), users.getPassword())) {
-            return jwtUtils.generateToken(users.getEmail(), users.getUserId(),
+            return jwtUtils.generateToken(users.getName(), users.getUserId(),
                     String.valueOf(users.getRole()));
         }
 
@@ -141,21 +149,9 @@ public class UserService {
         Users user = getUserById(userId);
 
         if (user != null) {
-            if (updateUserReq.getName() != "" || !updateUserReq.getName().isEmpty()) {
-                user.setName(updateUserReq.getName());
-            }
-
-            if (updateUserReq.getPassword() != "" || !updateUserReq.getPassword().isEmpty()
-                    || updateUserReq.getPassword() != null) {
-                user.setPassword(bCryptPasswordEncoder.encode(updateUserReq.getPassword()));
-            }
 
             if (updateUserReq.getEmail() != "" || !updateUserReq.getEmail().isEmpty()) {
                 user.setEmail(updateUserReq.getEmail());
-            }
-
-            if (updateUserReq.getRole() != null) {
-                user.setRole(updateUserReq.getRole());
             }
 
             return userDb.save(user);

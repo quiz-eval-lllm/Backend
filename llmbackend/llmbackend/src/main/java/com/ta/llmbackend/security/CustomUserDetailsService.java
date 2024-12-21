@@ -23,10 +23,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users users = userService.getUserByEmail(username);
+        Users users = userService.getUserByName(username);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         grantedAuthorities.add(new SimpleGrantedAuthority(String.valueOf(users.getRole())));
-        return new User(users.getEmail(), users.getPassword(), grantedAuthorities);
+        return new User(users.getName(), users.getPassword(), grantedAuthorities);
     }
 
 }

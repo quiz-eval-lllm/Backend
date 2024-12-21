@@ -15,112 +15,109 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.ta.llmbackend.security.util.CustomAccessDeniedHandler;
-import com.ta.llmbackend.security.util.CustomAuthenticationEntryPoint;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+        @Autowired
+        private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
+        @Autowired
+        private JwtAuthFilter jwtAuthFilter;
 
-    @Autowired
-    private CustomAuthenticationEntryPoint authenticationEntryPoint;
+        @Bean
+        public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .securityMatcher("/**")
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(auth -> {
+                                        // <=============== Uncomment to revoke security ===============>
+                                        // auth.requestMatchers("/**").permitAll();
 
-    @Autowired
-    private CustomAccessDeniedHandler accessDeniedHandler;
+                                        // })
 
-    @Bean
-    public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/**")
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
-                    // Uncomment to revoke security
-                    auth.requestMatchers("/**").permitAll();
+                                        // <=============== Uncomment to invoke security ===============>
 
-                })
+                                        // User endpoints
+                                        auth.requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll();
+                                        auth.requestMatchers(HttpMethod.POST, "/api/v1/user/auth").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET, "/api/v1/user").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/user?role=*").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.GET, "/api/v1/user/*").permitAll();
+                                        auth.requestMatchers(HttpMethod.PUT, "/api/v1/user/*/update")
+                                                        .hasAnyAuthority("0");
+                                        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/user/*/delete").permitAll();
 
-                // Uncomment to invoke security
-                // // User endpoints
-                // auth.requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll();
-                // auth.requestMatchers(HttpMethod.POST, "/api/v1/user/auth").permitAll();
-                // auth.requestMatchers(HttpMethod.PUT, "/api/v1/user/*/update").permitAll();
-                // auth.requestMatchers(HttpMethod.GET, "/api/v1/user/*").permitAll();
-                // auth.requestMatchers(HttpMethod.DELETE, "/api/v1/user/*/delete").permitAll();
-                // auth.requestMatchers(HttpMethod.GET, "/api/v1/user").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/user?role=*").hasAuthority("0");
+                                        // PDF Utilities
+                                        auth.requestMatchers("/api/v1/upload_pdf").permitAll();
+                                        auth.requestMatchers("/pdf_context/*").permitAll();
 
-                // // Quiz
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/quiz/assign").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/quiz/start").hasAuthority("1");
+                                        // Quiz Test
+                                        auth.requestMatchers("/quiz/generate").permitAll();
 
-                // // Quiz Package
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/quiz/package").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/quiz/package").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.GET, "/api/v1/quiz/package/*").permitAll();
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/quiz/package/available/*").hasAuthority("1");
-                // auth.requestMatchers(HttpMethod.PUT,
-                // "/api/v1/quiz/*/update").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.DELETE,
-                // "/api/v1/quiz/package/*/delete").hasAuthority("0");
+                                        // Quiz
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/quiz/assign").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/quiz/start").permitAll();
 
-                // // Quiz Activity
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/quiz/activity/*/restart").permitAll();
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/quiz/activity").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.GET, "/api/v1/quiz/activity/*").permitAll();
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/quiz/activity/available/*").hasAuthority("1");
-                // auth.requestMatchers(HttpMethod.DELETE,
-                // "/api/v1/quiz/activity/*/delete").hasAuthority("0");
+                                        // Quiz Package
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/quiz/package").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/quiz/package").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.GET, "/api/v1/quiz/package/*").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/quiz/package/available/*").permitAll();
+                                        auth.requestMatchers(HttpMethod.PUT,
+                                                        "/api/v1/quiz/*/update").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.DELETE,
+                                                        "/api/v1/quiz/package/*/delete").hasAuthority("0");
 
-                // // Question
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/quiz/question").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.GET, "/api/v1/quiz/question/**").permitAll();
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/quiz/package/*/question").permitAll();
-                // auth.requestMatchers(HttpMethod.PUT,
-                // "/api/v1/quiz/question/*/update").hasAuthority("0");
-                // auth.requestMatchers(HttpMethod.DELETE,
-                // "/api/v1/quiz/question/*/delete").hasAuthority("0");
+                                        // Quiz Activity
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/quiz/activity/*/restart").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/quiz/activity").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.GET, "/api/v1/quiz/activity/*").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/quiz/activity/available/*").permitAll();
+                                        auth.requestMatchers(HttpMethod.DELETE,
+                                                        "/api/v1/quiz/activity/*/delete").hasAuthority("0");
 
-                // // Evaluation
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/evaluation/multichoice").hasAuthority("1");
-                // auth.requestMatchers(HttpMethod.POST,
-                // "/api/v1/evaluation/essay").hasAuthority("1");
-                // auth.requestMatchers(HttpMethod.GET,
-                // "/api/v1/evaluation/quiz/*").permitAll();
-                // auth.requestMatchers(HttpMethod.GET, "/api/v1/evaluation/*").permitAll();
-                // })
-                // .exceptionHandling()
-                // .authenticationEntryPoint(authenticationEntryPoint)
-                // .accessDeniedHandler(accessDeniedHandler)
-                // .and()
-                .sessionManagement(sessionAuthenticationStrategy -> sessionAuthenticationStrategy
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
-        return http.build();
-    }
+                                        // Question
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/quiz/question").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.GET, "/api/v1/quiz/question/**").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/quiz/package/*/question").permitAll();
+                                        auth.requestMatchers(HttpMethod.PUT,
+                                                        "/api/v1/quiz/question/*/update").hasAuthority("0");
+                                        auth.requestMatchers(HttpMethod.DELETE,
+                                                        "/api/v1/quiz/question/*/delete").hasAuthority("0");
 
-    @Autowired
-    public void confAuthentication(AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder)
-            throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-    }
+                                        // Evaluation
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/evaluation/multichoice").permitAll();
+                                        auth.requestMatchers(HttpMethod.POST,
+                                                        "/api/v1/evaluation/essay").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                        "/api/v1/evaluation/quiz/*").permitAll();
+                                        auth.requestMatchers(HttpMethod.GET, "/api/v1/evaluation/*").permitAll();
+                                })
+
+                                .sessionManagement(sessionAuthenticationStrategy -> sessionAuthenticationStrategy
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                                .httpBasic(Customizer.withDefaults());
+                return http.build();
+        }
+
+        @Autowired
+        public void confAuthentication(AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder)
+                        throws Exception {
+                auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        }
 
 }
