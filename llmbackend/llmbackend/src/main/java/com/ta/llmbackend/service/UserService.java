@@ -51,7 +51,19 @@ public class UserService {
         List<Users> existingUsers = getAllUser();
         for (Users existingUser : existingUsers) {
             if (existingUser.getName().equalsIgnoreCase(userReq.getName())) {
-                throw new BadRequestException("User with name: " + userReq.getName() + " already exists");
+                existingUser.setUserId(UUID.fromString(userReq.getId()));
+                existingUser.setPassword(bCryptPasswordEncoder.encode(userReq.getPassword()));
+
+                Users temp = userDb.save(existingUser);
+
+                String token = jwtUtils.generateToken(existingUser.getName(), existingUser.getUserId(),
+                        String.valueOf(existingUser.getRole()));
+
+                AuthResponse authResponse = new AuthResponse();
+                authResponse.setUserInfo(temp);
+                authResponse.setToken(token);
+
+                return authResponse;
             }
             if (userReq.getEmail() != null && existingUser.getEmail() != null &&
                     existingUser.getEmail().equalsIgnoreCase(userReq.getEmail())) {
