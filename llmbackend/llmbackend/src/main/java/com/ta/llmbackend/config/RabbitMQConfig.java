@@ -10,6 +10,8 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 @Configuration
 public class RabbitMQConfig {
 
+    // TODO: RabbitMQ Configuration
+
     @Bean
     public Queue msgQueue() {
         return new Queue("msgQueue", false);

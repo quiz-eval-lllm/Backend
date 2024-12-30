@@ -83,4 +83,6 @@ public class RabbitMQService {
         }
     }
 
+    // TODO: Consume Requests in Spring Boot
+
 }
