@@ -30,6 +30,8 @@ public class SecurityConfig {
                 http
                                 .securityMatcher("/**")
                                 .csrf(AbstractHttpConfigurer::disable)
+                                .cors()
+                                .and()
                                 .authorizeHttpRequests(auth -> {
                                         // <=============== Uncomment to revoke security ===============>
                                         // auth.requestMatchers("/**").permitAll();

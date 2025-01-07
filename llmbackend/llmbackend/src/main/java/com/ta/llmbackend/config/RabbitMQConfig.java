@@ -10,7 +10,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 @Configuration
 public class RabbitMQConfig {
 
-    // TODO: RabbitMQ Configuration
+    // Configuration for Spring Boot <-> DGX
 
     @Bean
     public Queue msgQueue() {
@@ -33,4 +33,5 @@ public class RabbitMQConfig {
         rabbitTemplate.setReplyTimeout(600_000);
         return rabbitTemplate;
     }
+
 }
